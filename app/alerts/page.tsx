@@ -1,7 +1,7 @@
-'use client';
-import React, { useState } from 'react';
-import { Menu } from 'lucide-react';
-import Sidebar from '@/components/sidebar';
+"use client";
+import React, { useState } from "react";
+import { Menu } from "lucide-react";
+import Sidebar from "../../components/sidebar";
 
 // Type definitions
 interface Alert {
@@ -30,45 +30,46 @@ export default function SeeAlertsPage() {
       name: "Mr.Manager",
       message: "Machine 1 is under maintenance",
       avatar: "/api/placeholder/40/40", // Placeholder for avatar image
-      timestamp: "2 hours ago"
+      timestamp: "2 hours ago",
     },
     {
       id: 2,
       name: "Mr.john Doe",
       message: "Product A is not available in enough qty",
       avatar: "/api/placeholder/40/40", // Placeholder for avatar image
-      timestamp: "4 hours ago"
-    }
+      timestamp: "4 hours ago",
+    },
   ];
 
   const getInitials = (name: string): string => {
-    return name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
+    return name
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .toUpperCase();
   };
 
   const handleLoadMore = (): void => {
     // Handle load more functionality
-    console.log('Load more alerts clicked');
+    console.log("Load more alerts clicked");
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={handleCloseSidebar} 
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={handleCloseSidebar} />
 
       {/* Header */}
       <header className="bg-white shadow-sm px-4 py-4 flex items-center justify-between">
-        <button 
+        <button
           onClick={handleMenuClick}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <Menu className="w-6 h-6 text-blue-700" />
         </button>
-        
+
         <h1 className="text-xl font-semibold text-blue-700">See Alerts</h1>
-        
+
         <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
           <span className="text-white font-medium text-lg">A</span>
         </div>
@@ -78,7 +79,7 @@ export default function SeeAlertsPage() {
       <main className="px-4 py-6">
         <div className="max-w-md mx-auto space-y-4">
           {alerts.map((alert: Alert) => (
-            <div 
+            <div
               key={alert.id}
               className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
             >
@@ -89,7 +90,7 @@ export default function SeeAlertsPage() {
                     {getInitials(alert.name)}
                   </span>
                 </div>
-                
+
                 {/* Alert Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
@@ -124,7 +125,7 @@ export default function SeeAlertsPage() {
           {/* Load More Button (if needed) */}
           {alerts.length > 0 && (
             <div className="text-center pt-4">
-              <button 
+              <button
                 onClick={handleLoadMore}
                 className="text-blue-600 hover:text-blue-700 font-medium text-sm"
               >
