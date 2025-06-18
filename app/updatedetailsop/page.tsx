@@ -236,7 +236,7 @@
 "use client";
 import React, { useState } from "react";
 import { Menu, ChevronDown, Check } from "lucide-react";
-import Sidebar from "@/components/sidebar";
+import Sidebar from "../../components/sidebar";
 
 // Type definitions
 type Product =

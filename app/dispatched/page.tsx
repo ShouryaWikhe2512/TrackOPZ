@@ -1,7 +1,16 @@
-'use client';
-import React, { useState } from 'react';
-import { Menu, X, Package, DollarSign, Calendar, Truck, Eye, Search } from 'lucide-react';
-import Sidebar from '@/components/sidebarm';
+"use client";
+import React, { useState } from "react";
+import {
+  Menu,
+  X,
+  Package,
+  DollarSign,
+  Calendar,
+  Truck,
+  Eye,
+  Search,
+} from "lucide-react";
+import Sidebar from "../../components/sidebarm";
 
 // Interface for dispatched item data
 interface DispatchedItem {
@@ -21,12 +30,48 @@ export default function DispatchedPage(): React.ReactElement {
 
   // Sample dispatched items data with proper typing
   const dispatchedItems: DispatchedItem[] = [
-    { id: 1, product: 'Product A', quantity: 50, cost: 1000, date: '5 Oct 2025' },
-    { id: 2, product: 'Product B', quantity: 75, cost: 1500, date: '4 Oct 2025' },
-    { id: 3, product: 'Product C', quantity: 100, cost: 2000, date: '3 Oct 2025' },
-    { id: 4, product: 'Product D', quantity: 25, cost: 500, date: '2 Oct 2025' },
-    { id: 5, product: 'Product E', quantity: 150, cost: 3000, date: '1 Oct 2025' },
-    { id: 6, product: 'Product F', quantity: 100, cost: 2000, date: '30 Sep 2025' }
+    {
+      id: 1,
+      product: "Product A",
+      quantity: 50,
+      cost: 1000,
+      date: "5 Oct 2025",
+    },
+    {
+      id: 2,
+      product: "Product B",
+      quantity: 75,
+      cost: 1500,
+      date: "4 Oct 2025",
+    },
+    {
+      id: 3,
+      product: "Product C",
+      quantity: 100,
+      cost: 2000,
+      date: "3 Oct 2025",
+    },
+    {
+      id: 4,
+      product: "Product D",
+      quantity: 25,
+      cost: 500,
+      date: "2 Oct 2025",
+    },
+    {
+      id: 5,
+      product: "Product E",
+      quantity: 150,
+      cost: 3000,
+      date: "1 Oct 2025",
+    },
+    {
+      id: 6,
+      product: "Product F",
+      quantity: 100,
+      cost: 2000,
+      date: "30 Sep 2025",
+    },
   ];
 
   const handleMenuClick = (): void => {
@@ -38,22 +83,25 @@ export default function DispatchedPage(): React.ReactElement {
   };
 
   // Calculate totals with proper typing
-  const totalDispatched: number = dispatchedItems.reduce((sum: number, item: DispatchedItem) => sum + item.quantity, 0);
-  const totalCost: number = dispatchedItems.reduce((sum: number, item: DispatchedItem) => sum + item.cost, 0);
-  const lastDispatchDate: string = dispatchedItems[0]?.date || 'N/A';
+  const totalDispatched: number = dispatchedItems.reduce(
+    (sum: number, item: DispatchedItem) => sum + item.quantity,
+    0
+  );
+  const totalCost: number = dispatchedItems.reduce(
+    (sum: number, item: DispatchedItem) => sum + item.cost,
+    0
+  );
+  const lastDispatchDate: string = dispatchedItems[0]?.date || "N/A";
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">
-          <button 
+          <button
             onClick={handleMenuClick}
             className="p-2 hover:bg-gray-100 rounded-lg"
             type="button"
@@ -87,19 +135,25 @@ export default function DispatchedPage(): React.ReactElement {
                 <X className="w-3 h-3" />
               </button>
             </div>
-            
+
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">Total Dispatched:</span>
-                <span className="text-sm font-medium text-gray-900">{totalDispatched}</span>
+                <span className="text-sm font-medium text-gray-900">
+                  {totalDispatched}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">Cost of dispatch:</span>
-                <span className="text-sm font-medium text-gray-900">${totalCost}</span>
+                <span className="text-sm font-medium text-gray-900">
+                  ${totalCost}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">Dispatched Date:</span>
-                <span className="text-sm font-medium text-gray-900">{lastDispatchDate}</span>
+                <span className="text-sm font-medium text-gray-900">
+                  {lastDispatchDate}
+                </span>
               </div>
             </div>
           </div>
@@ -121,19 +175,28 @@ export default function DispatchedPage(): React.ReactElement {
         {/* Dispatched Items List */}
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-900">Recent Dispatches</h3>
-            <span className="text-sm text-gray-500">{dispatchedItems.length} items</span>
+            <h3 className="text-base font-semibold text-gray-900">
+              Recent Dispatches
+            </h3>
+            <span className="text-sm text-gray-500">
+              {dispatchedItems.length} items
+            </span>
           </div>
 
           {dispatchedItems.map((item: DispatchedItem) => (
-            <div key={item.id} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+            <div
+              key={item.id}
+              className="bg-white rounded-lg p-4 shadow-sm border border-gray-200"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                     <Package className="w-5 h-5 text-indigo-600" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">{item.product}</h4>
+                    <h4 className="text-sm font-medium text-gray-900">
+                      {item.product}
+                    </h4>
                     <div className="flex items-center space-x-4 text-xs text-gray-500 mt-1">
                       <span className="flex items-center space-x-1">
                         <Package className="w-3 h-3" />
@@ -147,8 +210,10 @@ export default function DispatchedPage(): React.ReactElement {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-medium text-gray-900">${item.cost}</div>
-                  <button 
+                  <div className="text-sm font-medium text-gray-900">
+                    ${item.cost}
+                  </div>
+                  <button
                     className="mt-1 p-1 hover:bg-gray-100 rounded"
                     type="button"
                     aria-label={`View details for ${item.product}`}
@@ -174,7 +239,7 @@ export default function DispatchedPage(): React.ReactElement {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">

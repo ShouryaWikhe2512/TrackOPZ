@@ -1,7 +1,7 @@
-'use client';
-import React, { useState, ChangeEvent } from 'react';
-import { Menu, Send } from 'lucide-react';
-import Sidebar from '@/components/sidebarm';
+"use client";
+import React, { useState, ChangeEvent } from "react";
+import { Menu, Send } from "lucide-react";
+import Sidebar from "../../components/sidebarm";
 
 // Type definitions
 interface Alert {
@@ -12,7 +12,7 @@ interface Alert {
 }
 
 export default function SendAlertsPage() {
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>("");
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
@@ -20,28 +20,28 @@ export default function SendAlertsPage() {
   const alerts: Alert[] = [
     {
       id: 1,
-      icon: '🔧',
-      title: 'Machine 1 is Under Maintenance',
-      description: 'Scheduled maintenance in progress'
+      icon: "🔧",
+      title: "Machine 1 is Under Maintenance",
+      description: "Scheduled maintenance in progress",
     },
     {
       id: 2,
-      icon: '⚠️',
-      title: 'Product A Urgent Requirement',
-      description: 'Critical production need'
+      icon: "⚠️",
+      title: "Product A Urgent Requirement",
+      description: "Critical production need",
     },
     {
       id: 3,
-      icon: '🔋',
-      title: 'Low Power Alert',
-      description: 'Power levels below threshold'
+      icon: "🔋",
+      title: "Low Power Alert",
+      description: "Power levels below threshold",
     },
     {
       id: 4,
-      icon: '🌡️',
-      title: 'Temperature Warning',
-      description: 'Machine overheating detected'
-    }
+      icon: "🌡️",
+      title: "Temperature Warning",
+      description: "Machine overheating detected",
+    },
   ];
 
   const handleMenuClick = (): void => {
@@ -51,8 +51,8 @@ export default function SendAlertsPage() {
   const handleSendAlert = (): void => {
     if (message.trim() || selectedAlert) {
       // Handle sending the alert
-      console.log('Sending alert:', { selectedAlert, message });
-      setMessage('');
+      console.log("Sending alert:", { selectedAlert, message });
+      setMessage("");
       setSelectedAlert(null);
       // You can add success notification here
     }
@@ -70,15 +70,12 @@ export default function SendAlertsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">
-          <button 
+          <button
             onClick={handleMenuClick}
             className="p-2 hover:bg-gray-100 rounded-lg"
           >
@@ -95,7 +92,9 @@ export default function SendAlertsPage() {
       <main className="flex-1 px-4 py-6">
         {/* Quick Alert Options */}
         <div className="mb-6">
-          <h2 className="text-sm font-medium text-gray-700 mb-4">Quick Alerts</h2>
+          <h2 className="text-sm font-medium text-gray-700 mb-4">
+            Quick Alerts
+          </h2>
           <div className="space-y-3">
             {alerts.map((alert: Alert) => (
               <button
@@ -103,8 +102,8 @@ export default function SendAlertsPage() {
                 onClick={() => handleAlertSelect(alert)}
                 className={`w-full p-4 bg-white rounded-lg border text-left transition-all ${
                   selectedAlert?.id === alert.id
-                    ? 'border-indigo-500 bg-indigo-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? "border-indigo-500 bg-indigo-50"
+                    : "border-gray-200 hover:border-gray-300"
                 }`}
               >
                 <div className="flex items-start space-x-3">
@@ -113,9 +112,7 @@ export default function SendAlertsPage() {
                     <h3 className="font-medium text-gray-900 text-sm mb-1">
                       {alert.title}
                     </h3>
-                    <p className="text-xs text-gray-500">
-                      {alert.description}
-                    </p>
+                    <p className="text-xs text-gray-500">{alert.description}</p>
                   </div>
                 </div>
               </button>
@@ -144,7 +141,9 @@ export default function SendAlertsPage() {
           <div className="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <span className="text-lg">{selectedAlert.icon}</span>
-              <span className="text-sm font-medium text-indigo-900">Selected Alert</span>
+              <span className="text-sm font-medium text-indigo-900">
+                Selected Alert
+              </span>
             </div>
             <p className="text-sm text-indigo-700">{selectedAlert.title}</p>
           </div>
@@ -158,8 +157,8 @@ export default function SendAlertsPage() {
           disabled={!message.trim() && !selectedAlert}
           className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium text-sm transition-colors ${
             message.trim() || selectedAlert
-              ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ? "bg-indigo-600 text-white hover:bg-indigo-700"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
           <Send className="w-4 h-4" />

@@ -1,7 +1,7 @@
-'use client';
-import React, { useState } from 'react';
-import { Menu, ChevronDown } from 'lucide-react';
-import Sidebar from '@/components/sidebar';
+"use client";
+import React, { useState } from "react";
+import { Menu, ChevronDown } from "lucide-react";
+import Sidebar from "../../components/sidebar";
 
 // Type definitions
 interface JobData {
@@ -19,11 +19,11 @@ interface CustomDropdownProps {
 }
 
 // Custom Dropdown Component
-const CustomDropdown: React.FC<CustomDropdownProps> = ({ 
-  label, 
-  value, 
-  options, 
-  onChange 
+const CustomDropdown: React.FC<CustomDropdownProps> = ({
+  label,
+  value,
+  options,
+  onChange,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -38,22 +38,20 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
   return (
     <div className="mb-6">
-      <label className="block text-gray-700 font-medium mb-2">
-        {label}
-      </label>
+      <label className="block text-gray-700 font-medium mb-2">{label}</label>
       <div className="relative">
         <button
           onClick={handleToggle}
           className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-left flex items-center justify-between hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
         >
           <span className="text-gray-700">{value}</span>
-          <ChevronDown 
+          <ChevronDown
             className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-              isOpen ? 'rotate-180' : ''
-            }`} 
+              isOpen ? "rotate-180" : ""
+            }`}
           />
         </button>
-        
+
         {isOpen && (
           <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
             {options.map((option: string, index: number) => (
@@ -73,41 +71,37 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 };
 
 export default function AddJobsForm() {
-  const [selectedMachine, setSelectedMachine] = useState<string>('Cutting MC/1');
-  const [selectedProduct, setSelectedProduct] = useState<string>('Product A');
-  const [selectedState, setSelectedState] = useState<string>('ON');
-  const [selectedStage, setSelectedStage] = useState<string>('Milling');
+  const [selectedMachine, setSelectedMachine] =
+    useState<string>("Cutting MC/1");
+  const [selectedProduct, setSelectedProduct] = useState<string>("Product A");
+  const [selectedState, setSelectedState] = useState<string>("ON");
+  const [selectedStage, setSelectedStage] = useState<string>("Milling");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   const machines: string[] = [
-    'Cutting MC/1',
-    'Milling 1',
-    'Milling 2',
-    'Drilling',
-    'CNC Finished'
+    "Cutting MC/1",
+    "Milling 1",
+    "Milling 2",
+    "Drilling",
+    "CNC Finished",
   ];
 
   const products: string[] = [
-    'Product A',
-    'Product B',
-    'Product C',
-    'Product D',
-    'Product E'
+    "Product A",
+    "Product B",
+    "Product C",
+    "Product D",
+    "Product E",
   ];
 
-  const states: string[] = [
-    'ON',
-    'OFF',
-    'MAINTENANCE',
-    'IDLE'
-  ];
+  const states: string[] = ["ON", "OFF", "MAINTENANCE", "IDLE"];
 
   const stages: string[] = [
-    'Cutting MC/1',
-    'Milling 1',
-    'Milling 2',
-    'Drilling',
-    'CNC Finished'
+    "Cutting MC/1",
+    "Milling 1",
+    "Milling 2",
+    "Drilling",
+    "CNC Finished",
   ];
 
   const handleMenuClick = (): void => {
@@ -123,31 +117,28 @@ export default function AddJobsForm() {
       machine: selectedMachine,
       product: selectedProduct,
       state: selectedState,
-      stage: selectedStage
+      stage: selectedStage,
     };
-    console.log('Adding job:', jobData);
+    console.log("Adding job:", jobData);
     // Here you would typically send the data to your backend
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={handleCloseSidebar} 
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={handleCloseSidebar} />
 
       {/* Header */}
       <header className="bg-blue-700 shadow-sm px-4 py-4 flex items-center justify-between">
-        <button 
+        <button
           onClick={handleMenuClick}
           className="p-2 hover:bg-blue-600 rounded-lg transition-colors"
         >
           <Menu className="w-6 h-6 text-white" />
         </button>
-        
+
         <h1 className="text-xl font-semibold text-white">Add Jobs</h1>
-        
+
         <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
           <span className="text-white font-medium text-lg">A</span>
         </div>

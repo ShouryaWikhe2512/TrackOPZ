@@ -158,7 +158,7 @@
 import React, { useState } from "react";
 import { Menu, Edit, Bell, Filter, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Sidebar from "@/components/sidebarm";
+import Sidebar from "../../components/sidebarm";
 
 // Interface for Next.js router
 interface NextRouter {

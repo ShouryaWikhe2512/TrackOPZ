@@ -1,10 +1,16 @@
-'use client';
-import React, { useState } from 'react';
-import { Menu, Download, ChevronDown } from 'lucide-react';
-import Sidebar from '@/components/sidebarm';
+"use client";
+import React, { useState } from "react";
+import { Menu, Download, ChevronDown } from "lucide-react";
+import Sidebar from "../../components/sidebarm";
 
 // Type definitions
-type ReportType = 'Product Wise' | 'Machine Wise' | 'Date Wise' | 'Operator Wise' | 'Status Wise' | 'Department Wise';
+type ReportType =
+  | "Product Wise"
+  | "Machine Wise"
+  | "Date Wise"
+  | "Operator Wise"
+  | "Status Wise"
+  | "Department Wise";
 
 interface CustomDropdownProps {
   value: string;
@@ -16,16 +22,18 @@ interface CustomDropdownProps {
 
 export default function ReportsPage() {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
-  const [selectedReportType, setSelectedReportType] = useState<ReportType>('Product Wise');
-  const [reportTypeDropdownOpen, setReportTypeDropdownOpen] = useState<boolean>(false);
+  const [selectedReportType, setSelectedReportType] =
+    useState<ReportType>("Product Wise");
+  const [reportTypeDropdownOpen, setReportTypeDropdownOpen] =
+    useState<boolean>(false);
 
   const reportTypes: ReportType[] = [
-    'Product Wise',
-    'Machine Wise',
-    'Date Wise',
-    'Operator Wise',
-    'Status Wise',
-    'Department Wise'
+    "Product Wise",
+    "Machine Wise",
+    "Date Wise",
+    "Operator Wise",
+    "Status Wise",
+    "Department Wise",
   ];
 
   const handleMenuClick = (): void => {
@@ -34,16 +42,16 @@ export default function ReportsPage() {
 
   const handleDownload = (): void => {
     // Handle download logic here
-    console.log('Downloading report:', selectedReportType);
+    console.log("Downloading report:", selectedReportType);
     // You can add actual download functionality here
   };
 
-  const CustomDropdown: React.FC<CustomDropdownProps> = ({ 
-    value, 
-    options, 
-    onChange, 
-    isOpen, 
-    setIsOpen 
+  const CustomDropdown: React.FC<CustomDropdownProps> = ({
+    value,
+    options,
+    onChange,
+    isOpen,
+    setIsOpen,
   }) => {
     return (
       <div className="relative">
@@ -52,13 +60,13 @@ export default function ReportsPage() {
           className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-left flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
         >
           <span className="text-gray-700 text-sm">{value}</span>
-          <ChevronDown 
+          <ChevronDown
             className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-              isOpen ? 'rotate-180' : ''
-            }`} 
+              isOpen ? "rotate-180" : ""
+            }`}
           />
         </button>
-        
+
         {isOpen && (
           <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
             {options.map((option: string, index: number) => (
@@ -82,15 +90,12 @@ export default function ReportsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">
-          <button 
+          <button
             onClick={handleMenuClick}
             className="p-2 hover:bg-gray-100 rounded-lg"
           >
@@ -117,13 +122,17 @@ export default function ReportsPage() {
 
             {/* Daily Reports Section */}
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <h3 className="text-sm font-medium text-gray-700 mb-4">Daily Reports</h3>
-              
+              <h3 className="text-sm font-medium text-gray-700 mb-4">
+                Daily Reports
+              </h3>
+
               <div className="space-y-4">
                 <CustomDropdown
                   value={selectedReportType}
                   options={reportTypes}
-                  onChange={(value: string) => setSelectedReportType(value as ReportType)}
+                  onChange={(value: string) =>
+                    setSelectedReportType(value as ReportType)
+                  }
                   isOpen={reportTypeDropdownOpen}
                   setIsOpen={setReportTypeDropdownOpen}
                 />
@@ -141,19 +150,19 @@ export default function ReportsPage() {
           {/* Additional Report Options */}
           <div className="space-y-4">
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <h3 className="text-sm font-medium text-gray-700 mb-4">Weekly Reports</h3>
-              <button
-                className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium text-sm hover:bg-gray-200 transition-colors"
-              >
+              <h3 className="text-sm font-medium text-gray-700 mb-4">
+                Weekly Reports
+              </h3>
+              <button className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium text-sm hover:bg-gray-200 transition-colors">
                 Generate Weekly Report
               </button>
             </div>
 
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <h3 className="text-sm font-medium text-gray-700 mb-4">Monthly Reports</h3>
-              <button
-                className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium text-sm hover:bg-gray-200 transition-colors"
-              >
+              <h3 className="text-sm font-medium text-gray-700 mb-4">
+                Monthly Reports
+              </h3>
+              <button className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium text-sm hover:bg-gray-200 transition-colors">
                 Generate Monthly Report
               </button>
             </div>
@@ -161,13 +170,19 @@ export default function ReportsPage() {
 
           {/* Recent Downloads */}
           <div className="mt-8">
-            <h3 className="text-sm font-medium text-gray-700 mb-4">Recent Downloads</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-4">
+              Recent Downloads
+            </h3>
             <div className="space-y-2">
               <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Product Wise Report</p>
-                    <p className="text-xs text-gray-500">Downloaded 2 hours ago</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Product Wise Report
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Downloaded 2 hours ago
+                    </p>
                   </div>
                   <Download className="w-4 h-4 text-gray-400" />
                 </div>
@@ -175,8 +190,12 @@ export default function ReportsPage() {
               <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Machine Wise Report</p>
-                    <p className="text-xs text-gray-500">Downloaded yesterday</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Machine Wise Report
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Downloaded yesterday
+                    </p>
                   </div>
                   <Download className="w-4 h-4 text-gray-400" />
                 </div>
