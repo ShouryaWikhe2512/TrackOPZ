@@ -151,7 +151,7 @@
 import React, { useState } from "react";
 import { Menu, Edit, Bell, Filter, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Sidebar from "@/components/sidebar";
+import Sidebar from "../../components/sidebar";
 
 export default function MobileInterface(): React.ReactElement {
   const [alertCount] = useState<number>(2);
