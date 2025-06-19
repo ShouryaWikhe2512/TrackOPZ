@@ -1,6 +1,16 @@
-'use client';
-import React, { useState } from 'react';
-import { X, User, Globe, Settings, Clock, LogOut, ArrowLeft, Moon, Languages } from 'lucide-react';
+"use client";
+import React, { useState } from "react";
+import {
+  X,
+  User,
+  Globe,
+  Settings,
+  Clock,
+  LogOut,
+  ArrowLeft,
+  Moon,
+  Languages,
+} from "lucide-react";
 
 // Type definitions
 interface DevicePreferenceContentProps {
@@ -12,6 +22,7 @@ interface SettingsContentProps {
 }
 
 interface MainMenuContentProps {
+  username: string | null;
   onDevicePreference: () => void;
   onSettings: () => void;
   onUserProfile: () => void;
@@ -22,9 +33,10 @@ interface MainMenuContentProps {
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  username: string | null;
 }
 
-type ViewType = 'main' | 'devicePreference' | 'settings';
+type ViewType = "main" | "devicePreference" | "settings";
 
 // Device Preference Content Component
 function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
@@ -38,12 +50,16 @@ function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-800">Device Preference</h1>
+        <h1 className="text-lg font-semibold text-gray-800">
+          Device Preference
+        </h1>
       </div>
 
       {/* App Parameters Section */}
       <div className="mb-4">
-        <h2 className="text-xs font-medium text-gray-600 mb-2">App Parameters</h2>
+        <h2 className="text-xs font-medium text-gray-600 mb-2">
+          App Parameters
+        </h2>
         <div className="bg-white rounded-lg p-3 shadow-sm">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
@@ -51,7 +67,9 @@ function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
               <span className="text-gray-900 font-medium text-sm">PUNE</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-700 text-sm">Server Reachability:</span>
+              <span className="text-gray-700 text-sm">
+                Server Reachability:
+              </span>
               <span className="text-green-600 font-medium text-sm">YES</span>
             </div>
             <div className="flex justify-between items-center">
@@ -60,7 +78,9 @@ function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-700 text-sm">Latency:</span>
-              <span className="text-gray-900 font-medium text-sm">1.115 sec</span>
+              <span className="text-gray-900 font-medium text-sm">
+                1.115 sec
+              </span>
             </div>
           </div>
         </div>
@@ -68,13 +88,17 @@ function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
 
       {/* Device Parameters Section */}
       <div>
-        <h2 className="text-xs font-medium text-gray-600 mb-2">Device Parameters</h2>
+        <h2 className="text-xs font-medium text-gray-600 mb-2">
+          Device Parameters
+        </h2>
         <div className="bg-white rounded-lg p-3 shadow-sm">
           <div className="space-y-2">
             <div className="flex justify-between items-start">
               <span className="text-gray-700 text-sm">Platform:</span>
               <div className="text-right">
-                <div className="text-gray-900 font-medium text-sm">android 15</div>
+                <div className="text-gray-900 font-medium text-sm">
+                  android 15
+                </div>
                 <div className="text-gray-500 text-xs">VANILLA_ICE sdk=35</div>
               </div>
             </div>
@@ -85,7 +109,9 @@ function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
             <div className="flex justify-between items-start">
               <span className="text-gray-700 text-sm">Service Provider:</span>
               <div className="text-right">
-                <div className="text-gray-900 font-medium text-sm">Airtel/5G/</div>
+                <div className="text-gray-900 font-medium text-sm">
+                  Airtel/5G/
+                </div>
                 <div className="text-gray-500 text-xs">VOLTE</div>
               </div>
             </div>
@@ -99,9 +125,11 @@ function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
 // Settings Content Component
 function SettingsContent({ onBack }: SettingsContentProps) {
   const [darkMode, setDarkMode] = useState<boolean>(true);
-  const [language, setLanguage] = useState<string>('English(UK)');
+  const [language, setLanguage] = useState<string>("English(UK)");
 
-  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
+  const handleLanguageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
     setLanguage(event.target.value);
   };
 
@@ -124,17 +152,19 @@ function SettingsContent({ onBack }: SettingsContentProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Moon className="w-4 h-4 text-gray-600" />
-              <span className="text-gray-700 font-medium text-sm">Dark Mode</span>
+              <span className="text-gray-700 font-medium text-sm">
+                Dark Mode
+              </span>
             </div>
             <button
               onClick={() => setDarkMode(!darkMode)}
               className={`relative w-10 h-5 rounded-full transition-colors ${
-                darkMode ? 'bg-blue-600' : 'bg-gray-300'
+                darkMode ? "bg-blue-600" : "bg-gray-300"
               }`}
             >
               <div
                 className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
-                  darkMode ? 'translate-x-5' : 'translate-x-0.5'
+                  darkMode ? "translate-x-5" : "translate-x-0.5"
                 }`}
               />
             </button>
@@ -148,7 +178,9 @@ function SettingsContent({ onBack }: SettingsContentProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Languages className="w-4 h-4 text-gray-600" />
-              <span className="text-gray-700 font-medium text-sm">Language</span>
+              <span className="text-gray-700 font-medium text-sm">
+                Language
+              </span>
             </div>
             <select
               value={language}
@@ -166,7 +198,9 @@ function SettingsContent({ onBack }: SettingsContentProps) {
 
       {/* Additional Settings */}
       <div>
-        <h2 className="text-xs font-medium text-gray-600 mb-2">Additional Settings</h2>
+        <h2 className="text-xs font-medium text-gray-600 mb-2">
+          Additional Settings
+        </h2>
         <div className="space-y-2">
           {/* <button className="w-full bg-white rounded-lg p-3 shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-between">
             <span className="text-gray-700 font-medium text-sm">Notifications</span>
@@ -191,19 +225,22 @@ function SettingsContent({ onBack }: SettingsContentProps) {
 }
 
 // Main Menu Content Component
-function MainMenuContent({ 
-  onDevicePreference, 
-  onSettings, 
-  onUserProfile, 
-  onSession, 
-  onLogOut 
+function MainMenuContent({
+  username,
+  onDevicePreference,
+  onSettings,
+  onUserProfile,
+  onSession,
+  onLogOut,
 }: MainMenuContentProps) {
   return (
     <>
       {/* Connect Section */}
       <div className="mb-8">
-        <h2 className="text-gray-600 text-sm font-medium mb-4">TrackOpz (Connected System)</h2>
-        
+        <h2 className="text-gray-600 text-sm font-medium mb-4">
+          TrackOpz (Connected System)
+        </h2>
+
         {/* User Profile */}
         <button
           onClick={onUserProfile}
@@ -214,8 +251,11 @@ function MainMenuContent({
               <User className="w-4 h-4 text-green-700" />
             </div>
             <div className="text-left">
-              <div className="text-gray-800 font-medium">Dennis</div>
-              <div className="text-gray-600 text-sm">Ritche</div>
+              <div className="text-gray-800 font-medium">
+                {username || "Operator"}
+              </div>
+              {/* Optionally, you can show a subtitle or remove the line below */}
+              {/* <div className="text-gray-600 text-sm">Ritche</div> */}
             </div>
           </div>
           <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
@@ -248,7 +288,7 @@ function MainMenuContent({
       {/* Activities Section */}
       <div>
         <h2 className="text-gray-600 text-sm font-medium mb-4">Activities</h2>
-        
+
         {/* Session */}
         <button
           onClick={onSession}
@@ -274,43 +314,44 @@ function MainMenuContent({
   );
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const [currentView, setCurrentView] = useState<ViewType>('main');
+export default function Sidebar({ isOpen, onClose, username }: SidebarProps) {
+  const [currentView, setCurrentView] = useState<ViewType>("main");
 
   const handleUserProfile = (): void => {
-    console.log('User profile clicked');
+    console.log("User profile clicked");
   };
 
   const handleDevicePreference = (): void => {
-    setCurrentView('devicePreference');
+    setCurrentView("devicePreference");
   };
 
   const handleSettings = (): void => {
-    setCurrentView('settings');
+    setCurrentView("settings");
   };
 
   const handleBackToMain = (): void => {
-    setCurrentView('main');
+    setCurrentView("main");
   };
 
   const handleSession = (): void => {
-    console.log('Session clicked');
+    console.log("Session clicked");
   };
 
   const handleLogOut = (): void => {
-    console.log('Log Out clicked');
+    console.log("Log Out clicked");
     onClose();
   };
 
   const renderSidebarContent = () => {
     switch (currentView) {
-      case 'devicePreference':
+      case "devicePreference":
         return <DevicePreferenceContent onBack={handleBackToMain} />;
-      case 'settings':
+      case "settings":
         return <SettingsContent onBack={handleBackToMain} />;
       default:
         return (
           <MainMenuContent
+            username={username}
             onDevicePreference={handleDevicePreference}
             onSettings={handleSettings}
             onUserProfile={handleUserProfile}
@@ -325,16 +366,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {/* Sidebar Overlay */}
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
       )}
 
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 h-full w-80 bg-gray-100 z-50 transform transition-transform duration-300 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="p-6 h-full overflow-y-auto">

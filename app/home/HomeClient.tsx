@@ -11,6 +11,7 @@ export default function HomeClient({
   profileImage: string | null;
   username: string | null;
 }) {
+  console.log("Sidebar username prop:", username); // Debug log
   const [alertCount] = useState<number>(2);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const router = useRouter();
@@ -46,7 +47,11 @@ export default function HomeClient({
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Sidebar Component */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        username={username}
+      />
 
       {/* Header */}
       <header className="bg-white shadow-sm px-4 py-4 flex items-center justify-between sticky top-0 z-20">
