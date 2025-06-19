@@ -30,13 +30,12 @@ export default function OperatorOTPPage() {
       });
       const data = await res.json();
       if (data.success) {
-        localStorage.removeItem("operator_phone");
         if (data.firstTime) {
           router.push("/operator-setup");
         } else {
-          // Optionally store username/profileImage in localStorage
-          router.push("/operator-home");
+          router.push("/home2");
         }
+        setTimeout(() => localStorage.removeItem("operator_phone"), 1000);
       } else {
         setError(data.error || "OTP verification failed");
       }

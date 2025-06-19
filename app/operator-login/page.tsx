@@ -20,12 +20,8 @@ export default function OperatorLoginPage() {
       });
       const data = await res.json();
       if (data.success) {
-        if (data.firstTime) {
-          router.push("/operator-setup");
-        } else {
-          router.push("/home");
-        }
-        setTimeout(() => localStorage.removeItem("operator_phone"), 1000);
+        localStorage.setItem("operator_phone", phone);
+        router.push("/operator-otp");
       } else {
         setError(data.error || "Login failed");
       }

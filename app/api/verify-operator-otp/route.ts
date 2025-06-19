@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
@@ -32,10 +33,27 @@ export async function POST(req: NextRequest) {
     data: { used: true },
   });
 
-  // 4. Check if first time
-  if (operator.username && operator.profileImage) {
-    return NextResponse.json({ success: true, firstTime: false, username: operator.username, profileImage: operator.profileImage });
-  } else {
-    return NextResponse.json({ success: true, firstTime: true });
-  }
+  // 4. Generate JWT
+  const token = jwt.sign(
+    { phone: operator.phone },
+    process.env.JWT_SECRET!,
+    { expiresIn: '7d' }
+  );
+
+  // 5. Set JWT as HTTP-only cookie
+  const response = NextResponse.json({
+    success: true,
+    firstTime: !(operator.username && operator.profileImage),
+    username: operator.username,
+    profileImage: operator.profileImage,
+  });
+  response.cookies.set('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  });
+
+  return response;
 } 
