@@ -2,19 +2,19 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function OTPPage() {
+export default function OperatorOTPPage() {
   const [otp, setOtp] = useState("");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("login_email");
-    if (storedEmail) {
-      setEmail(storedEmail);
+    const storedPhone = localStorage.getItem("operator_phone");
+    if (storedPhone) {
+      setPhone(storedPhone);
     } else {
-      router.push("/loginpage");
+      router.push("/operator-login");
     }
   }, [router]);
 
@@ -23,15 +23,20 @@ export default function OTPPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/verify-otp", {
+      const res = await fetch("/api/verify-operator-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({ phone, otp }),
       });
       const data = await res.json();
       if (data.success) {
-        localStorage.removeItem("login_email");
-        router.push("/home2"); // or /dashboard
+        localStorage.removeItem("operator_phone");
+        if (data.firstTime) {
+          router.push("/operator-setup");
+        } else {
+          // Optionally store username/profileImage in localStorage
+          router.push("/operator-home");
+        }
       } else {
         setError(data.error || "OTP verification failed");
       }
@@ -46,7 +51,7 @@ export default function OTPPage() {
     <div className="min-h-screen flex items-center justify-center bg-blue-50">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">
-          OTP Verification
+          Operator OTP Verification
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

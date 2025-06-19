@@ -39,3 +39,21 @@ model PasswordResetToken {
   expiresAt DateTime
   used      Boolean  @default(false)
 }
+
+model Operator {
+  id           Int      @id @default(autoincrement())
+  phone        String   @unique
+  username     String?
+  profileImage String?
+  createdAt    DateTime @default(now())
+  otps         OperatorOTP[]
+}
+
+model OperatorOTP {
+  id         Int       @id @default(autoincrement())
+  operator   Operator  @relation(fields: [operatorId], references: [id])
+  operatorId Int
+  code       String
+  expiresAt  DateTime
+  used       Boolean   @default(false)
+}

@@ -1,2 +1,2 @@
 const bcrypt = require("bcryptjs");
-bcrypt.hash("gnarihbalfgpeltm", 10).then(console.log);
+bcrypt.hash("viit@faizan", 10).then(console.log);

@@ -2,19 +2,20 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function OTPPage() {
-  const [otp, setOtp] = useState("");
-  const [email, setEmail] = useState("");
+export default function OperatorSetupPage() {
+  const [username, setUsername] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("login_email");
-    if (storedEmail) {
-      setEmail(storedEmail);
+    const storedPhone = localStorage.getItem("operator_phone");
+    if (storedPhone) {
+      setPhone(storedPhone);
     } else {
-      router.push("/loginpage");
+      router.push("/operator-login");
     }
   }, [router]);
 
@@ -23,17 +24,17 @@ export default function OTPPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/verify-otp", {
+      const res = await fetch("/api/operator-setup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({ phone, username, profileImage }),
       });
       const data = await res.json();
       if (data.success) {
-        localStorage.removeItem("login_email");
-        router.push("/home2"); // or /dashboard
+        localStorage.removeItem("operator_phone");
+        router.push("/home");
       } else {
-        setError(data.error || "OTP verification failed");
+        setError(data.error || "Account setup failed");
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
@@ -46,22 +47,33 @@ export default function OTPPage() {
     <div className="min-h-screen flex items-center justify-center bg-blue-50">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">
-          OTP Verification
+          Operator Account Setup
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-blue-700 font-medium mb-1">
-              Enter OTP
+              Username
             </label>
             <input
               type="text"
-              className="w-full px-4 py-2 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-center tracking-widest text-lg"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              className="w-full px-4 py-2 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
-              maxLength={6}
-              pattern="[0-9]{6}"
-              inputMode="numeric"
+              placeholder="Enter your username"
+            />
+          </div>
+          <div>
+            <label className="block text-blue-700 font-medium mb-1">
+              Profile Image URL
+            </label>
+            <input
+              type="url"
+              className="w-full px-4 py-2 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={profileImage}
+              onChange={(e) => setProfileImage(e.target.value)}
+              required
+              placeholder="Paste your profile image URL"
             />
           </div>
           {error && <div className="text-red-600 text-sm">{error}</div>}
@@ -70,7 +82,7 @@ export default function OTPPage() {
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-semibold disabled:opacity-60"
             disabled={loading}
           >
-            {loading ? "Verifying..." : "Verify OTP"}
+            {loading ? "Setting up..." : "Complete Setup"}
           </button>
         </form>
       </div>
