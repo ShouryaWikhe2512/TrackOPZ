@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   X,
   User,
@@ -15,6 +15,19 @@ import {
 // Type definitions
 interface DevicePreferenceContentProps {
   onBack: () => void;
+  appParams: {
+    location: string;
+    serverReachability: string;
+    dataConnections: string;
+    latency: string;
+  };
+  deviceParams: {
+    platform: string;
+    platformDetails: string;
+    manufacturer: string;
+    serviceProvider: string;
+    serviceProviderDetails: string;
+  };
 }
 
 interface SettingsContentProps {
@@ -39,7 +52,11 @@ interface SidebarProps {
 type ViewType = "main" | "devicePreference" | "settings";
 
 // Device Preference Content Component
-function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
+function DevicePreferenceContent({
+  onBack,
+  appParams,
+  deviceParams,
+}: DevicePreferenceContentProps) {
   return (
     <div>
       {/* Header */}
@@ -64,22 +81,28 @@ function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-gray-700 text-sm">Location:</span>
-              <span className="text-gray-900 font-medium text-sm">PUNE</span>
+              <span className="text-gray-900 font-medium text-sm">
+                {appParams.location}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-700 text-sm">
                 Server Reachability:
               </span>
-              <span className="text-green-600 font-medium text-sm">YES</span>
+              <span className="text-green-600 font-medium text-sm">
+                {appParams.serverReachability}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-700 text-sm">Data Connections:</span>
-              <span className="text-gray-900 font-medium text-sm">MOBILE</span>
+              <span className="text-gray-900 font-medium text-sm">
+                {appParams.dataConnections}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-700 text-sm">Latency:</span>
               <span className="text-gray-900 font-medium text-sm">
-                1.115 sec
+                {appParams.latency}
               </span>
             </div>
           </div>
@@ -97,22 +120,28 @@ function DevicePreferenceContent({ onBack }: DevicePreferenceContentProps) {
               <span className="text-gray-700 text-sm">Platform:</span>
               <div className="text-right">
                 <div className="text-gray-900 font-medium text-sm">
-                  android 15
+                  {deviceParams.platform}
                 </div>
-                <div className="text-gray-500 text-xs">VANILLA_ICE sdk=35</div>
+                <div className="text-gray-500 text-xs">
+                  {deviceParams.platformDetails}
+                </div>
               </div>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-700 text-sm">Manufacturer:</span>
-              <span className="text-gray-900 font-medium text-sm">VIVO</span>
+              <span className="text-gray-900 font-medium text-sm">
+                {deviceParams.manufacturer}
+              </span>
             </div>
             <div className="flex justify-between items-start">
               <span className="text-gray-700 text-sm">Service Provider:</span>
               <div className="text-right">
                 <div className="text-gray-900 font-medium text-sm">
-                  Airtel/5G/
+                  {deviceParams.serviceProvider}
                 </div>
-                <div className="text-gray-500 text-xs">VOLTE</div>
+                <div className="text-gray-500 text-xs">
+                  {deviceParams.serviceProviderDetails}
+                </div>
               </div>
             </div>
           </div>
@@ -317,6 +346,111 @@ function MainMenuContent({
 export default function Sidebar({ isOpen, onClose, username }: SidebarProps) {
   const [currentView, setCurrentView] = useState<ViewType>("main");
 
+  // Device/App Info State
+  const [appParams, setAppParams] = useState({
+    location: "Unknown",
+    serverReachability: "NO",
+    dataConnections: "Unknown",
+    latency: "Unknown",
+  });
+  const [deviceParams, setDeviceParams] = useState({
+    platform: "Unknown",
+    platformDetails: "",
+    manufacturer: "Unknown",
+    serviceProvider: "Unknown",
+    serviceProviderDetails: "",
+  });
+
+  // TODO: Replace with your real OpenCage API key
+  const OPENCAGE_API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
+
+  useEffect(() => {
+    // Platform info
+    setDeviceParams((prev) => ({
+      ...prev,
+      platform: navigator.userAgent,
+      platformDetails: navigator.platform,
+    }));
+
+    // Network info (if supported)
+    const connection =
+      (navigator as any).connection ||
+      (navigator as any).mozConnection ||
+      (navigator as any).webkitConnection;
+    if (connection) {
+      setAppParams((prev) => ({
+        ...prev,
+        dataConnections: connection.effectiveType || "Unknown",
+        latency: connection.rtt ? connection.rtt + " ms" : prev.latency,
+      }));
+    }
+
+    // Ping server for reachability/latency
+    const start = Date.now();
+    fetch("/api/ping")
+      .then(() => {
+        setAppParams((prev) => ({
+          ...prev,
+          serverReachability: "YES",
+          latency: ((Date.now() - start) / 1000).toFixed(3) + " sec",
+        }));
+      })
+      .catch(() => {
+        setAppParams((prev) => ({
+          ...prev,
+          serverReachability: "NO",
+        }));
+      });
+
+    // Geolocation with OpenCage reverse geocoding
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          // Call OpenCage API for reverse geocoding
+          fetch(
+            `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${OPENCAGE_API_KEY}`
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              if (
+                data &&
+                data.results &&
+                data.results[0] &&
+                data.results[0].formatted
+              ) {
+                setAppParams((prev) => ({
+                  ...prev,
+                  location: data.results[0].formatted,
+                }));
+              } else {
+                setAppParams((prev) => ({
+                  ...prev,
+                  location: `Lat: ${latitude.toFixed(
+                    2
+                  )}, Lon: ${longitude.toFixed(2)}`,
+                }));
+              }
+            })
+            .catch(() => {
+              setAppParams((prev) => ({
+                ...prev,
+                location: `Lat: ${latitude.toFixed(
+                  2
+                )}, Lon: ${longitude.toFixed(2)}`,
+              }));
+            });
+        },
+        () => {
+          setAppParams((prev) => ({
+            ...prev,
+            location: "Permission Denied",
+          }));
+        }
+      );
+    }
+  }, []);
+
   const handleUserProfile = (): void => {
     console.log("User profile clicked");
   };
@@ -345,7 +479,13 @@ export default function Sidebar({ isOpen, onClose, username }: SidebarProps) {
   const renderSidebarContent = () => {
     switch (currentView) {
       case "devicePreference":
-        return <DevicePreferenceContent onBack={handleBackToMain} />;
+        return (
+          <DevicePreferenceContent
+            onBack={handleBackToMain}
+            appParams={appParams}
+            deviceParams={deviceParams}
+          />
+        );
       case "settings":
         return <SettingsContent onBack={handleBackToMain} />;
       default:
