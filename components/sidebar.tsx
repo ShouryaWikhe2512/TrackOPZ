@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import "../i18n";
 import {
   X,
   User,
@@ -11,6 +13,7 @@ import {
   Moon,
   Languages,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // Type definitions
 interface DevicePreferenceContentProps {
@@ -153,14 +156,26 @@ function DevicePreferenceContent({
 
 // Settings Content Component
 function SettingsContent({ onBack }: SettingsContentProps) {
+  const { t, i18n } = useTranslation();
   const [darkMode, setDarkMode] = useState<boolean>(true);
-  const [language, setLanguage] = useState<string>("English(UK)");
+  const [language, setLanguage] = useState<string>(i18n.language);
 
   const handleLanguageChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ): void => {
-    setLanguage(event.target.value);
+    const newLang = event.target.value;
+    setLanguage(newLang);
+    i18n.changeLanguage(newLang);
+    localStorage.setItem("language", newLang);
   };
+
+  useEffect(() => {
+    const savedLang = localStorage.getItem("language");
+    if (savedLang && savedLang !== i18n.language) {
+      i18n.changeLanguage(savedLang);
+      setLanguage(savedLang);
+    }
+  }, [i18n]);
 
   return (
     <div>
@@ -172,7 +187,7 @@ function SettingsContent({ onBack }: SettingsContentProps) {
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-800">Settings</h1>
+        <h1 className="text-lg font-semibold text-gray-800">{t("Settings")}</h1>
       </div>
 
       {/* Dark Mode Setting */}
@@ -182,7 +197,7 @@ function SettingsContent({ onBack }: SettingsContentProps) {
             <div className="flex items-center space-x-3">
               <Moon className="w-4 h-4 text-gray-600" />
               <span className="text-gray-700 font-medium text-sm">
-                Dark Mode
+                {t("Dark Mode")}
               </span>
             </div>
             <button
@@ -208,7 +223,7 @@ function SettingsContent({ onBack }: SettingsContentProps) {
             <div className="flex items-center space-x-3">
               <Languages className="w-4 h-4 text-gray-600" />
               <span className="text-gray-700 font-medium text-sm">
-                Language
+                {t("Language")}
               </span>
             </div>
             <select
@@ -216,10 +231,10 @@ function SettingsContent({ onBack }: SettingsContentProps) {
               onChange={handleLanguageChange}
               className="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
-              <option value="English(UK)">English(UK)</option>
-              <option value="English(US)">English(US)</option>
-              <option value="Hindi">Hindi</option>
-              <option value="Marathi">Marathi</option>
+              <option value="en">English(UK)</option>
+              <option value="en-US">English(US)</option>
+              <option value="hi">Hindi</option>
+              <option value="mr">Marathi</option>
             </select>
           </div>
         </div>
@@ -228,23 +243,13 @@ function SettingsContent({ onBack }: SettingsContentProps) {
       {/* Additional Settings */}
       <div>
         <h2 className="text-xs font-medium text-gray-600 mb-2">
-          Additional Settings
+          {t("Additional Settings")}
         </h2>
         <div className="space-y-2">
-          {/* <button className="w-full bg-white rounded-lg p-3 shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-between">
-            <span className="text-gray-700 font-medium text-sm">Notifications</span>
-            <span className="text-gray-400">›</span>
-          </button>
           <button className="w-full bg-white rounded-lg p-3 shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-between">
-            <span className="text-gray-700 font-medium text-sm">Privacy & Security</span>
-            <span className="text-gray-400">›</span>
-          </button>
-          <button className="w-full bg-white rounded-lg p-3 shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-between">
-            <span className="text-gray-700 font-medium text-sm">Data Usage</span>
-            <span className="text-gray-400">›</span>
-          </button> */}
-          <button className="w-full bg-white rounded-lg p-3 shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-between">
-            <span className="text-gray-700 font-medium text-sm">About</span>
+            <span className="text-gray-700 font-medium text-sm">
+              {t("About")}
+            </span>
             <span className="text-gray-400">›</span>
           </button>
         </div>
@@ -345,6 +350,7 @@ function MainMenuContent({
 
 export default function Sidebar({ isOpen, onClose, username }: SidebarProps) {
   const [currentView, setCurrentView] = useState<ViewType>("main");
+  const router = useRouter();
 
   // Device/App Info State
   const [appParams, setAppParams] = useState({
@@ -471,8 +477,9 @@ export default function Sidebar({ isOpen, onClose, username }: SidebarProps) {
     console.log("Session clicked");
   };
 
-  const handleLogOut = (): void => {
-    console.log("Log Out clicked");
+  const handleLogOut = async (): Promise<void> => {
+    await fetch("/api/logout", { method: "POST" });
+    router.push("/operator-login");
     onClose();
   };
 
