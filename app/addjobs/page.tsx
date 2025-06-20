@@ -11,8 +11,6 @@ interface JobData {
   stage: string;
 }
 
-const username = "Operator";
-
 interface CustomDropdownProps {
   label: string;
   value: string;
@@ -128,11 +126,7 @@ export default function AddJobsForm() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        username={username}
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={handleCloseSidebar} />
 
       {/* Header */}
       <header className="bg-blue-700 shadow-sm px-4 py-4 flex items-center justify-between">

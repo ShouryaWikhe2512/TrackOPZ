@@ -13,8 +13,6 @@ interface Product {
 export default function ProductListPage(): React.ReactElement {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
-  const username = "Operator";
-
   const handleMenuClick = (): void => {
     setSidebarOpen(true);
   };
@@ -61,11 +59,7 @@ export default function ProductListPage(): React.ReactElement {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        username={username}
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Header */}
       <header className="bg-white shadow-sm px-4 py-4 flex items-center justify-between">
