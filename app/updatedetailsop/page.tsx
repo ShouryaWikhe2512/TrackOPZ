@@ -401,8 +401,11 @@ export default function UpdateDetailsPage(): React.ReactElement {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        username="Operator"
+      />
       {/* Header */}
       <header className="bg-white shadow-sm px-4 py-4 flex items-center justify-between">
         <button
