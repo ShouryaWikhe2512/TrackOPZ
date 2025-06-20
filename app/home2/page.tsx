@@ -2,8 +2,9 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import MobileInterface from "./MobileInterface";
 
-export default function Home2Page() {
-  const token = cookies().get("token")?.value;
+export default async function Home2Page() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
   let username = "Manager";
   if (token) {
