@@ -308,7 +308,11 @@ export default function WorkPanelInterface() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Use your existing Sidebar Component */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        username="Manager"
+      />
 
       {/* Header */}
       <header className="bg-white px-6 py-4 flex items-center justify-between">

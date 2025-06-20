@@ -96,7 +96,11 @@ export default function DispatchedPage(): React.ReactElement {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        username="Manager"
+      />
 
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3">
