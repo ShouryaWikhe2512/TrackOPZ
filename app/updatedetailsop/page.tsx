@@ -273,6 +273,7 @@ interface UpdateData {
   dispatchStatus: DispatchStatus;
   dispatchedCost: number;
 }
+const username = "Operator";
 
 export default function UpdateDetailsPage(): React.ReactElement {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -401,7 +402,11 @@ export default function UpdateDetailsPage(): React.ReactElement {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        username={username}
+      />
 
       {/* Header */}
       <header className="bg-white shadow-sm px-4 py-4 flex items-center justify-between">

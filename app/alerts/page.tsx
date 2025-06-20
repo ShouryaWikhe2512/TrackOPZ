@@ -12,6 +12,8 @@ interface Alert {
   timestamp: string;
 }
 
+const username = "Operator";
+
 export default function SeeAlertsPage() {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
@@ -57,7 +59,11 @@ export default function SeeAlertsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <Sidebar isOpen={sidebarOpen} onClose={handleCloseSidebar} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        username={username}
+      />
 
       {/* Header */}
       <header className="bg-white shadow-sm px-4 py-4 flex items-center justify-between">
