@@ -33,7 +33,7 @@ export default function OperatorOTPPage() {
         if (data.firstTime) {
           router.push("/operator-setup");
         } else {
-          router.push("/home2");
+          router.push("/home");
         }
         setTimeout(() => localStorage.removeItem("operator_phone"), 1000);
       } else {

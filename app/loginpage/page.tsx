@@ -82,6 +82,19 @@ export default function LoginPage() {
             Forgot Password?
           </a>
         </div>
+
+        {/* Operator Login Section */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <div className="text-center">
+            <p className="text-gray-600 text-sm mb-3">Are you an operator?</p>
+            <button
+              onClick={() => router.push("/operator-login")}
+              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition font-semibold"
+            >
+              Operator Login
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

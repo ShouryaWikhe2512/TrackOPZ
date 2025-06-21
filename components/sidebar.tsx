@@ -1,7 +1,7 @@
 "use client";
+import "../i18n";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import "../i18n";
 import {
   X,
   User,
