@@ -44,12 +44,22 @@ interface MainMenuContentProps {
   onUserProfile: () => void;
   onSession: () => void;
   onLogOut: () => void;
+  sessionData?: {
+    lastLogin: string;
+    currentSessionStart: string;
+    sessionDuration: string;
+  };
 }
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   username: string | null;
+  sessionData?: {
+    lastLogin: string;
+    currentSessionStart: string;
+    sessionDuration: string;
+  };
 }
 
 type ViewType = "main" | "devicePreference" | "settings";
@@ -60,6 +70,7 @@ function DevicePreferenceContent({
   appParams,
   deviceParams,
 }: DevicePreferenceContentProps) {
+  const { t } = useTranslation();
   return (
     <div>
       {/* Header */}
@@ -71,39 +82,41 @@ function DevicePreferenceContent({
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
         <h1 className="text-lg font-semibold text-gray-800">
-          Device Preference
+          {t("Device Preference")}
         </h1>
       </div>
 
       {/* App Parameters Section */}
       <div className="mb-4">
         <h2 className="text-xs font-medium text-gray-600 mb-2">
-          App Parameters
+          {t("App Parameters")}
         </h2>
         <div className="bg-white rounded-lg p-3 shadow-sm">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-gray-700 text-sm">Location:</span>
+              <span className="text-gray-700 text-sm">{t("Location")}</span>
               <span className="text-gray-900 font-medium text-sm">
                 {appParams.location}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-700 text-sm">
-                Server Reachability:
+                {t("Server Reachability")}
               </span>
               <span className="text-green-600 font-medium text-sm">
                 {appParams.serverReachability}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-700 text-sm">Data Connections:</span>
+              <span className="text-gray-700 text-sm">
+                {t("Data Connections")}
+              </span>
               <span className="text-gray-900 font-medium text-sm">
                 {appParams.dataConnections}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-700 text-sm">Latency:</span>
+              <span className="text-gray-700 text-sm">{t("Latency")}</span>
               <span className="text-gray-900 font-medium text-sm">
                 {appParams.latency}
               </span>
@@ -115,12 +128,12 @@ function DevicePreferenceContent({
       {/* Device Parameters Section */}
       <div>
         <h2 className="text-xs font-medium text-gray-600 mb-2">
-          Device Parameters
+          {t("Device Parameters")}
         </h2>
         <div className="bg-white rounded-lg p-3 shadow-sm">
           <div className="space-y-2">
             <div className="flex justify-between items-start">
-              <span className="text-gray-700 text-sm">Platform:</span>
+              <span className="text-gray-700 text-sm">{t("Platform")}</span>
               <div className="text-right">
                 <div className="text-gray-900 font-medium text-sm">
                   {deviceParams.platform}
@@ -131,13 +144,15 @@ function DevicePreferenceContent({
               </div>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-700 text-sm">Manufacturer:</span>
+              <span className="text-gray-700 text-sm">{t("Manufacturer")}</span>
               <span className="text-gray-900 font-medium text-sm">
                 {deviceParams.manufacturer}
               </span>
             </div>
             <div className="flex justify-between items-start">
-              <span className="text-gray-700 text-sm">Service Provider:</span>
+              <span className="text-gray-700 text-sm">
+                {t("Service Provider")}
+              </span>
               <div className="text-right">
                 <div className="text-gray-900 font-medium text-sm">
                   {deviceParams.serviceProvider}
@@ -231,10 +246,8 @@ function SettingsContent({ onBack }: SettingsContentProps) {
               onChange={handleLanguageChange}
               className="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
-              <option value="en">English(UK)</option>
-              <option value="en-US">English(US)</option>
-              <option value="hi">Hindi</option>
-              <option value="mr">Marathi</option>
+              <option value="en">{t("English(UK)")}</option>
+              <option value="sv">{t("Swedish")}</option>
             </select>
           </div>
         </div>
@@ -266,7 +279,26 @@ function MainMenuContent({
   onUserProfile,
   onSession,
   onLogOut,
+  sessionData,
 }: MainMenuContentProps) {
+  const { t } = useTranslation();
+
+  // Format session time for display
+  const formatSessionTime = (timeString: string) => {
+    if (!timeString) return t("Unknown");
+    const date = new Date(timeString);
+    const now = new Date();
+    const diffInMinutes = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60)
+    );
+
+    if (diffInMinutes < 1) return t("Just now");
+    if (diffInMinutes < 60) return `${diffInMinutes} ${t("min ago")}`;
+    if (diffInMinutes < 1440)
+      return `${Math.floor(diffInMinutes / 60)} ${t("hr ago")}`;
+    return `${Math.floor(diffInMinutes / 1440)} ${t("days ago")}`;
+  };
+
   return (
     <>
       {/* Connect Section */}
@@ -286,14 +318,12 @@ function MainMenuContent({
             </div>
             <div className="text-left">
               <div className="text-gray-800 font-medium">
-                {username || "Operator"}
+                {username || t("Manager")}
               </div>
-              {/* Optionally, you can show a subtitle or remove the line below */}
-              {/* <div className="text-gray-600 text-sm">Ritche</div> */}
             </div>
           </div>
           <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
-            Operator
+            {t("Manager")}
           </span>
         </button>
 
@@ -303,7 +333,9 @@ function MainMenuContent({
           className="w-full flex items-center space-x-3 p-3 hover:bg-gray-200 rounded-lg transition-colors mb-2"
         >
           <Globe className="w-5 h-5 text-gray-600" />
-          <span className="text-gray-700 font-medium">Device Preference</span>
+          <span className="text-gray-700 font-medium">
+            {t("Device Preference")}
+          </span>
         </button>
 
         {/* Settings */}
@@ -312,7 +344,7 @@ function MainMenuContent({
           className="w-full flex items-center space-x-3 p-3 hover:bg-gray-200 rounded-lg transition-colors"
         >
           <Settings className="w-5 h-5 text-gray-600" />
-          <span className="text-gray-700 font-medium">Settings</span>
+          <span className="text-gray-700 font-medium">{t("Settings")}</span>
         </button>
       </div>
 
@@ -321,7 +353,9 @@ function MainMenuContent({
 
       {/* Activities Section */}
       <div>
-        <h2 className="text-gray-600 text-sm font-medium mb-4">Activities</h2>
+        <h2 className="text-gray-600 text-sm font-medium mb-4">
+          {t("Activities")}
+        </h2>
 
         {/* Session */}
         <button
@@ -330,9 +364,21 @@ function MainMenuContent({
         >
           <div className="flex items-center space-x-3">
             <Clock className="w-5 h-5 text-gray-600" />
-            <span className="text-gray-700 font-medium">Session</span>
+            <span className="text-gray-700 font-medium">{t("Session")}</span>
           </div>
-          <span className="text-gray-500 text-sm">Last: 13Oct</span>
+          <div className="text-right">
+            <div className="text-gray-500 text-sm">
+              {sessionData?.lastLogin
+                ? `${t("Last")}: ${formatSessionTime(sessionData.lastLogin)}`
+                : t("No session data")}
+            </div>
+            {sessionData?.currentSessionStart && (
+              <div className="text-gray-400 text-xs">
+                {t("Active")}:{" "}
+                {formatSessionTime(sessionData.currentSessionStart)}
+              </div>
+            )}
+          </div>
         </button>
 
         {/* Log Out */}
@@ -341,18 +387,23 @@ function MainMenuContent({
           className="w-full flex items-center space-x-3 p-3 hover:bg-gray-200 rounded-lg transition-colors"
         >
           <LogOut className="w-5 h-5 text-gray-600" />
-          <span className="text-gray-700 font-medium">Log Out</span>
+          <span className="text-gray-700 font-medium">{t("Log Out")}</span>
         </button>
       </div>
     </>
   );
 }
 
-export default function Sidebar({ isOpen, onClose, username }: SidebarProps) {
-  const [currentView, setCurrentView] = useState<ViewType>("main");
+export default function Sidebar({
+  isOpen,
+  onClose,
+  username,
+  sessionData,
+}: SidebarProps) {
   const router = useRouter();
+  const [currentView, setCurrentView] = useState<ViewType>("main");
 
-  // Device/App Info State
+  // Real-time App Parameters State
   const [appParams, setAppParams] = useState({
     location: "Unknown",
     serverReachability: "NO",
@@ -366,6 +417,22 @@ export default function Sidebar({ isOpen, onClose, username }: SidebarProps) {
     serviceProvider: "Unknown",
     serviceProviderDetails: "",
   });
+
+  // Session data state with fallback
+  const [currentSessionData, setCurrentSessionData] = useState(
+    sessionData || {
+      lastLogin: new Date().toISOString(),
+      currentSessionStart: new Date().toISOString(),
+      sessionDuration: "0 min",
+    }
+  );
+
+  // Update session data when prop changes
+  useEffect(() => {
+    if (sessionData) {
+      setCurrentSessionData(sessionData);
+    }
+  }, [sessionData]);
 
   // TODO: Replace with your real OpenCage API key
   const OPENCAGE_API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
@@ -504,6 +571,7 @@ export default function Sidebar({ isOpen, onClose, username }: SidebarProps) {
             onUserProfile={handleUserProfile}
             onSession={handleSession}
             onLogOut={handleLogOut}
+            sessionData={currentSessionData}
           />
         );
     }
