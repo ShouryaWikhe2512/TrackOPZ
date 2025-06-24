@@ -80,7 +80,7 @@ export default function ReportsPage() {
       fetchRecentDownloads(); // Refresh recent downloads list
     } catch (error) {
       console.error("Download failed:", error);
-      setError(error.message);
+      setError(error instanceof Error ? error.message : String(error));
     } finally {
       setIsDownloading(null);
     }

@@ -31,7 +31,7 @@ interface CustomDropdownProps {
 export default function WorkPanelInterface() {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<ViewType>("machine");
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [selectedFilter, setSelectedFilter] =
     useState<FilterType>("Machine/Process No");
   const [jobs, setJobs] = useState<any[]>([]);
