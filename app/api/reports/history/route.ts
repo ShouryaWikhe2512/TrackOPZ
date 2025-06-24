@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     });
     return NextResponse.json({ success: true, recentDownloads });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
+    
   }
 } 
