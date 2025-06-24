@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, ChevronDown, X } from "lucide-react";
 import Sidebar from "../../components/sidebarm";
 
@@ -34,26 +34,49 @@ export default function WorkPanelInterface() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedFilter, setSelectedFilter] =
     useState<FilterType>("Machine/Process No");
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [machines, setMachines] = useState<any[]>([]);
 
   const filterOptions: FilterType[] = ["Machine/Process No", "Product Type"];
 
-  // Machine/Process data
-  const machineData: Machine[] = [
-    { id: 1, name: "Cutting MC/1", status: "ON", statusColor: "green" },
-    { id: 2, name: "Milling 1", status: "OFF", statusColor: "gray" },
-    { id: 3, name: "Milling 2", status: "ON", statusColor: "green" },
-    { id: 4, name: "Drilling", status: "OFF", statusColor: "gray" },
-    { id: 5, name: "CNC Finish", status: "ON", statusColor: "green" },
-  ];
-
-  // Product data
-  const productData: Product[] = [
-    { id: "A", name: "Product A", operation: "Milling", date: "15/06/2025" },
-    { id: "B", name: "Product B", operation: "Cutting", date: "14/06/2025" },
-    { id: "C", name: "Product C", operation: "Drilling", date: "13/06/2025" },
-    { id: "D", name: "Product D", operation: "Milling", date: "12/06/2025" },
-    { id: "E", name: "Product E", operation: "Finishing", date: "11/06/2025" },
-  ];
+  useEffect(() => {
+    fetch("/api/jobs")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.jobs) {
+          setJobs(data.jobs);
+          // Extract unique machines with latest status
+          const machineMap: Record<string, any> = {};
+          data.jobs.forEach((job: any) => {
+            if (
+              !machineMap[job.machine.id] ||
+              new Date(job.createdAt) >
+                new Date(machineMap[job.machine.id].createdAt)
+            ) {
+              machineMap[job.machine.id] = job.machine;
+              machineMap[job.machine.id].status = job.state;
+            }
+          });
+          setMachines(Object.values(machineMap));
+        }
+      });
+    const es = new EventSource("/api/jobs/stream");
+    es.onmessage = (event) => {
+      const job = JSON.parse(event.data);
+      setJobs((prev) => [job, ...prev]);
+      setMachines((prev) => {
+        const idx = prev.findIndex((m) => m.id === job.machine.id);
+        if (idx !== -1) {
+          const updated = [...prev];
+          updated[idx] = { ...job.machine, status: job.state };
+          return updated;
+        } else {
+          return [{ ...job.machine, status: job.state }, ...prev];
+        }
+      });
+    };
+    return () => es.close();
+  }, []);
 
   const handleMenuClick = (): void => {
     setSidebarOpen(true);
@@ -144,7 +167,7 @@ export default function WorkPanelInterface() {
 
   const renderMachineView = () => (
     <div className="space-y-4">
-      {machineData.map((machine) => (
+      {machines.map((machine: any) => (
         <button
           key={machine.id}
           onClick={() => handleMachineClick(machine)}
@@ -173,127 +196,134 @@ export default function WorkPanelInterface() {
           </div>
         </button>
       ))}
-
       {/* Status Overview */}
-      <div className="mt-8 bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <h3 className="text-gray-800 font-medium mb-6">Status Overview</h3>
-        <div className="grid grid-cols-2 gap-8">
-          <div className="text-center">
-            <div className="text-4xl font-bold text-green-600 mb-2">
-              {machineData.filter((m) => m.status === "ON").length}
-            </div>
-            <div className="text-sm text-gray-600 flex items-center justify-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              Online
-            </div>
+      <h3 className="text-gray-800 font-medium mb-6">Status Overview</h3>
+      <div className="grid grid-cols-2 gap-8">
+        <div className="text-center">
+          <div className="text-4xl font-bold text-green-600 mb-2">
+            {machines.filter((m: any) => m.status === "ON").length}
           </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-gray-500 mb-2">
-              {machineData.filter((m) => m.status === "OFF").length}
-            </div>
-            <div className="text-sm text-gray-600 flex items-center justify-center">
-              <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
-              Offline
-            </div>
+          <div className="text-sm text-gray-600 flex items-center justify-center">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+            Online
+          </div>
+        </div>
+        <div className="text-center">
+          <div className="text-4xl font-bold text-gray-500 mb-2">
+            {machines.filter((m: any) => m.status === "OFF").length}
+          </div>
+          <div className="text-sm text-gray-600 flex items-center justify-center">
+            <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+            Offline
           </div>
         </div>
       </div>
     </div>
   );
 
-  const renderProductView = () => (
-    <div className="space-y-4">
-      {productData.map((product) => (
-        <div
-          key={product.id}
-          className="bg-white rounded-lg p-4 shadow-sm border border-gray-200"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-              <div>
-                <h3 className="text-gray-900 font-medium text-base mb-1">
-                  {product.name}
-                </h3>
-                <p className="text-sm text-gray-500">On: {product.operation}</p>
+  const renderProductView = () => {
+    const sortedJobs = [...jobs].sort((a, b) =>
+      a.product.name.localeCompare(b.product.name)
+    );
+
+    return (
+      <div className="space-y-4">
+        {sortedJobs.map((job: any) => (
+          <div
+            key={job.id}
+            className="bg-white rounded-lg p-4 shadow-sm border border-gray-200"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <div>
+                  <h3 className="text-gray-900 font-medium text-base mb-1">
+                    {job.product.name}
+                  </h3>
+                  <div className="text-xs text-gray-500 mb-1">
+                    Machine:{" "}
+                    <span className="font-medium text-gray-700">
+                      {job.machine.name}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 mb-1">
+                    Stage:{" "}
+                    <span className="font-medium text-gray-700">
+                      {job.stage}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 mb-1">
+                    Date:{" "}
+                    <span className="font-medium text-gray-700">
+                      {job.createdAt
+                        ? new Date(job.createdAt).toLocaleString()
+                        : ""}
+                    </span>
+                  </div>
+                  <div className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 font-semibold">
+                    {job.state}
+                  </div>
+                </div>
               </div>
+              <button
+                onClick={() => handleSeeDetails(job)}
+                className="px-4 py-2 bg-black text-white text-sm rounded-md hover:bg-gray-800 transition-colors"
+              >
+                See Details
+              </button>
             </div>
-            <button
-              onClick={() => handleSeeDetails(product)}
-              className="px-4 py-2 bg-black text-white text-sm rounded-md hover:bg-gray-800 transition-colors"
-            >
-              See Details
-            </button>
           </div>
-        </div>
-      ))}
-    </div>
-  );
+        ))}
+      </div>
+    );
+  };
 
   const renderDetailsView = () => (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-4">
-          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {selectedProduct?.name}
-          </h1>
-        </div>
+        <h2 className="text-xl font-bold text-gray-900">
+          {selectedProduct?.product.name}
+        </h2>
         <button
           onClick={handleClose}
-          className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+          className="p-2 hover:bg-gray-100 rounded-full"
         >
-          <span>Close</span>
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5 text-gray-600" />
         </button>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Date : DD/MM/YY
+          <label className="block text-sm font-medium text-gray-500 mb-1">
+            Machine
           </label>
-          <div className="text-gray-900 text-lg">{selectedProduct?.date}</div>
+          <p className="text-base text-gray-800">
+            {selectedProduct?.machine.name}
+          </p>
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Operation
+          <label className="block text-sm font-medium text-gray-500 mb-1">
+            Current Stage
           </label>
-          <div className="text-gray-900 text-lg">
-            {selectedProduct?.operation}
-          </div>
+          <p className="text-base text-gray-800">{selectedProduct?.stage}</p>
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-500 mb-1">
             Status
           </label>
-          <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
-            Active
-          </div>
+          <p className="text-base text-green-600 font-semibold">
+            {selectedProduct?.state}
+          </p>
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Machine Assignment
+          <label className="block text-sm font-medium text-gray-500 mb-1">
+            Date
           </label>
-          <div className="text-gray-900 text-lg">
-            Machine #{selectedProduct?.id}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Progress
-          </label>
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <div
-              className="bg-blue-600 h-3 rounded-full"
-              style={{ width: "75%" }}
-            ></div>
-          </div>
-          <div className="text-sm text-gray-600 mt-2">75% Complete</div>
+          <p className="text-base text-gray-800">
+            {selectedProduct?.createdAt
+              ? new Date(selectedProduct.createdAt).toLocaleString()
+              : ""}
+          </p>
         </div>
       </div>
     </div>

@@ -318,12 +318,12 @@ function MainMenuContent({
             </div>
             <div className="text-left">
               <div className="text-gray-800 font-medium">
-                {username || t("Manager")}
+                {username || t("Operator")}
               </div>
             </div>
           </div>
           <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
-            {t("Manager")}
+            {t("Operator")}
           </span>
         </button>
 

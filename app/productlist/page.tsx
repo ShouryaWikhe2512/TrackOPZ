@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, Clock } from "lucide-react";
 import Sidebar from "../../components/sidebar";
 
@@ -12,44 +12,34 @@ interface Product {
 
 export default function ProductListPage(): React.ReactElement {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.products) setProducts(data.products);
+      });
+    const es = new EventSource("/api/products/stream");
+    es.onmessage = (event) => {
+      const product = JSON.parse(event.data);
+      setProducts((prev) => {
+        const idx = prev.findIndex((p) => p.id === product.id);
+        if (idx !== -1) {
+          const updated = [...prev];
+          updated[idx] = product;
+          return updated;
+        } else {
+          return [product, ...prev];
+        }
+      });
+    };
+    return () => es.close();
+  }, []);
 
   const handleMenuClick = (): void => {
     setSidebarOpen(true);
   };
-
-  // Sample products data
-  const products: Product[] = [
-    {
-      id: 1,
-      name: "Product A",
-      process: "Milling",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Product B",
-      process: "Cutting",
-      status: "active",
-    },
-    {
-      id: 3,
-      name: "Product C",
-      process: "Milling",
-      status: "active",
-    },
-    {
-      id: 4,
-      name: "Product D",
-      process: "Milling",
-      status: "active",
-    },
-    {
-      id: 5,
-      name: "Product E",
-      process: "Drilling",
-      status: "active",
-    },
-  ];
 
   const handleProductClick = (product: Product): void => {
     console.log("Product clicked:", product);

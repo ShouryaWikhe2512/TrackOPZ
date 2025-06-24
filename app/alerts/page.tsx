@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import Sidebar from "../../components/sidebar";
 
@@ -14,6 +14,42 @@ interface Alert {
 
 export default function SeeAlertsPage() {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+
+  useEffect(() => {
+    // Fetch initial alerts from backend
+    fetch("/api/alerts")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.alerts)
+          setAlerts(
+            data.alerts.map((a: any) => ({
+              id: a.id,
+              name: a.senderId ? `Manager #${a.senderId}` : "Manager",
+              message: a.message,
+              avatar: "",
+              timestamp: new Date(a.createdAt).toLocaleString(),
+            }))
+          );
+      });
+
+    // Subscribe to SSE for real-time alerts
+    const es = new EventSource("/api/alerts/stream");
+    es.onmessage = (event) => {
+      const alert = JSON.parse(event.data);
+      setAlerts((prev) => [
+        {
+          id: alert.id,
+          name: alert.senderId ? `Manager #${alert.senderId}` : "Manager",
+          message: alert.message,
+          avatar: "",
+          timestamp: new Date(alert.createdAt).toLocaleString(),
+        },
+        ...prev,
+      ]);
+    };
+    return () => es.close();
+  }, []);
 
   const handleMenuClick = (): void => {
     setSidebarOpen(true);
@@ -22,24 +58,6 @@ export default function SeeAlertsPage() {
   const handleCloseSidebar = (): void => {
     setSidebarOpen(false);
   };
-
-  // Sample alerts data
-  const alerts: Alert[] = [
-    {
-      id: 1,
-      name: "Mr.Manager",
-      message: "Machine 1 is under maintenance",
-      avatar: "/api/placeholder/40/40", // Placeholder for avatar image
-      timestamp: "2 hours ago",
-    },
-    {
-      id: 2,
-      name: "Mr.john Doe",
-      message: "Product A is not available in enough qty",
-      avatar: "/api/placeholder/40/40", // Placeholder for avatar image
-      timestamp: "4 hours ago",
-    },
-  ];
 
   const getInitials = (name: string): string => {
     return name

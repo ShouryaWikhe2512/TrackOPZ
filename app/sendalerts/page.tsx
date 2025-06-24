@@ -15,6 +15,7 @@ export default function SendAlertsPage() {
   const [message, setMessage] = useState<string>("");
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [notification, setNotification] = useState<string>("");
 
   // Sample alert data
   const alerts: Alert[] = [
@@ -48,13 +49,27 @@ export default function SendAlertsPage() {
     setSidebarOpen(true);
   };
 
-  const handleSendAlert = (): void => {
+  const handleSendAlert = async (): Promise<void> => {
     if (message.trim() || selectedAlert) {
-      // Handle sending the alert
-      console.log("Sending alert:", { selectedAlert, message });
-      setMessage("");
-      setSelectedAlert(null);
-      // You can add success notification here
+      const alertMessage = selectedAlert ? selectedAlert.title : message;
+      const alertIcon = selectedAlert ? selectedAlert.icon : "";
+      try {
+        const res = await fetch("/api/alerts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: alertMessage, icon: alertIcon }),
+        });
+        if (res.ok) {
+          setNotification("Alert sent successfully!");
+          setMessage("");
+          setSelectedAlert(null);
+        } else {
+          setNotification("Failed to send alert.");
+        }
+      } catch (err) {
+        setNotification("Failed to send alert.");
+      }
+      setTimeout(() => setNotification(""), 2000);
     }
   };
 
@@ -156,6 +171,11 @@ export default function SendAlertsPage() {
 
       {/* Send Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+        {notification && (
+          <div className="mb-2 text-center text-sm font-medium text-green-600">
+            {notification}
+          </div>
+        )}
         <button
           onClick={handleSendAlert}
           disabled={!message.trim() && !selectedAlert}

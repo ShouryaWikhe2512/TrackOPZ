@@ -41,12 +41,14 @@ model PasswordResetToken {
 }
 
 model Operator {
-  id           Int      @id @default(autoincrement())
-  phone        String   @unique
-  username     String?
-  profileImage String?
-  createdAt    DateTime @default(now())
-  otps         OperatorOTP[]
+  id             Int      @id @default(autoincrement())
+  phone          String   @unique
+  username       String?
+  profileImage   String?
+  createdAt      DateTime @default(now())
+  otps           OperatorOTP[]
+  productUpdates OperatorProductUpdate[]
+  alertStatuses  OperatorAlertStatus[]
 }
 
 model OperatorOTP {
@@ -56,4 +58,72 @@ model OperatorOTP {
   code       String
   expiresAt  DateTime
   used       Boolean   @default(false)
+}
+
+model Alert {
+  id        Int      @id @default(autoincrement())
+  senderId  Int?     // Manager user id (optional, if you want to track sender)
+  message   String
+  icon      String?  // Optional icon for the alert
+  createdAt DateTime @default(now())
+  recipients OperatorAlertStatus[]
+}
+
+model Machine {
+  id     Int    @id @default(autoincrement())
+  name   String
+  status String // e.g., "ON", "OFF", etc.
+  jobs   Job[]
+}
+
+model Product {
+  id   Int    @id @default(autoincrement())
+  name String
+  jobs Job[]
+}
+
+model Job {
+  id        Int      @id @default(autoincrement())
+  machine   Machine  @relation(fields: [machineId], references: [id])
+  machineId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  state     String
+  stage     String
+  createdAt DateTime @default(now())
+}
+
+model OperatorProductUpdate {
+  id             Int      @id @default(autoincrement())
+  operatorId     Int
+  operator       Operator @relation(fields: [operatorId], references: [id])
+  product        String
+  processSteps   Json
+  dispatchStatus String
+  dispatchedCost Float
+  createdAt      DateTime @default(now())
+}
+
+model OperatorAlertStatus {
+  id          Int       @id @default(autoincrement())
+  operator    Operator  @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+  operatorId  Int
+  alert       Alert     @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  alertId     Int
+  read        Boolean   @default(false)
+
+  @@unique([operatorId, alertId])
+}
+
+model DailyDispatchStats {
+  id          Int      @id @default(autoincrement())
+  date        DateTime @unique @db.Date
+  totalAmount Float
+  totalCount  Int
+}
+
+model ReportDownload {
+  id           Int      @id @default(autoincrement())
+  reportName   String
+  downloadedAt DateTime @default(now())
 }

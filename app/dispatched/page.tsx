@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Menu,
   X,
@@ -21,58 +21,31 @@ interface DispatchedItem {
   date: string;
 }
 
-// Props interface for the Sidebar component (assuming it takes these props)
-// (Removed unused SidebarProps interface)
+interface Summary {
+  totalCost: number;
+  totalDispatched: number;
+  lastDispatchDate: string | null;
+}
 
 export default function DispatchedPage(): React.ReactElement {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [showSummary, setShowSummary] = useState<boolean>(true);
+  const [dispatchedItems, setDispatchedItems] = useState<DispatchedItem[]>([]);
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Sample dispatched items data with proper typing
-  const dispatchedItems: DispatchedItem[] = [
-    {
-      id: 1,
-      product: "Product A",
-      quantity: 50,
-      cost: 1000,
-      date: "5 Oct 2025",
-    },
-    {
-      id: 2,
-      product: "Product B",
-      quantity: 75,
-      cost: 1500,
-      date: "4 Oct 2025",
-    },
-    {
-      id: 3,
-      product: "Product C",
-      quantity: 100,
-      cost: 2000,
-      date: "3 Oct 2025",
-    },
-    {
-      id: 4,
-      product: "Product D",
-      quantity: 25,
-      cost: 500,
-      date: "2 Oct 2025",
-    },
-    {
-      id: 5,
-      product: "Product E",
-      quantity: 150,
-      cost: 3000,
-      date: "1 Oct 2025",
-    },
-    {
-      id: 6,
-      product: "Product F",
-      quantity: 100,
-      cost: 2000,
-      date: "30 Sep 2025",
-    },
-  ];
+  useEffect(() => {
+    fetch("/api/admin/dispatched-items")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setDispatchedItems(data.items);
+          setSummary(data.summary);
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   const handleMenuClick = (): void => {
     setSidebarOpen(true);
@@ -144,19 +117,21 @@ export default function DispatchedPage(): React.ReactElement {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">Total Dispatched:</span>
                 <span className="text-sm font-medium text-gray-900">
-                  {totalDispatched}
+                  {summary?.totalDispatched || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">Cost of dispatch:</span>
                 <span className="text-sm font-medium text-gray-900">
-                  ${totalCost}
+                  ₹{summary?.totalCost.toFixed(2) || "0.00"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">Dispatched Date:</span>
                 <span className="text-sm font-medium text-gray-900">
-                  {lastDispatchDate}
+                  {summary?.lastDispatchDate
+                    ? new Date(summary.lastDispatchDate).toLocaleDateString()
+                    : "N/A"}
                 </span>
               </div>
             </div>
@@ -208,14 +183,14 @@ export default function DispatchedPage(): React.ReactElement {
                       </span>
                       <span className="flex items-center space-x-1">
                         <Calendar className="w-3 h-3" />
-                        <span>{item.date}</span>
+                        <span>{new Date(item.date).toLocaleDateString()}</span>
                       </span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-medium text-gray-900">
-                    ${item.cost}
+                    ₹{item.cost.toFixed(2)}
                   </div>
                   <button
                     className="mt-1 p-1 hover:bg-gray-100 rounded"
@@ -251,7 +226,9 @@ export default function DispatchedPage(): React.ReactElement {
               </div>
               <div>
                 <p className="text-xs text-gray-500">Total Value</p>
-                <p className="text-lg font-bold text-gray-900">${totalCost}</p>
+                <p className="text-lg font-bold text-gray-900">
+                  ₹{summary?.totalCost.toFixed(2) || "0.00"}
+                </p>
               </div>
             </div>
           </div>

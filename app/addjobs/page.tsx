@@ -77,6 +77,7 @@ export default function AddJobsForm() {
   const [selectedState, setSelectedState] = useState<string>("ON");
   const [selectedStage, setSelectedStage] = useState<string>("Milling");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [notification, setNotification] = useState<string>("");
 
   const machines: string[] = [
     "Cutting MC/1",
@@ -112,15 +113,28 @@ export default function AddJobsForm() {
     setSidebarOpen(false);
   };
 
-  const handleAddJob = (): void => {
+  const handleAddJob = async (): Promise<void> => {
     const jobData: JobData = {
       machine: selectedMachine,
       product: selectedProduct,
       state: selectedState,
       stage: selectedStage,
     };
-    console.log("Adding job:", jobData);
-    // Here you would typically send the data to your backend
+    try {
+      const res = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(jobData),
+      });
+      if (res.ok) {
+        setNotification("Job added successfully!");
+      } else {
+        setNotification("Failed to add job.");
+      }
+    } catch (err) {
+      setNotification("Failed to add job.");
+    }
+    setTimeout(() => setNotification(""), 2000);
   };
 
   return (
@@ -177,7 +191,7 @@ export default function AddJobsForm() {
 
           {/* Current Stage */}
           <CustomDropdown
-            label="Next Stage"
+            label="Current Stage"
             value={selectedStage}
             options={stages}
             onChange={setSelectedStage}
@@ -185,6 +199,11 @@ export default function AddJobsForm() {
 
           {/* Add Button */}
           <div className="flex justify-center mt-8">
+            {notification && (
+              <div className="mb-2 text-center text-sm font-medium text-green-600">
+                {notification}
+              </div>
+            )}
             <button
               onClick={handleAddJob}
               className="bg-white text-blue-700 px-8 py-3 rounded-full font-medium hover:bg-blue-700 hover:text-white transition-colors shadow-lg"
